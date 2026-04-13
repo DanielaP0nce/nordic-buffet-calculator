@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Nordic Buffet Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f7f3ee;
+      --surface: #ffffff;
+      --surface-alt: #faf6f0;
+      --border: #d6cfc5;
+      --text: #1a1a2e;
+      --text-secondary: #5a5a72;
+      --accent: #1a1a3e;
+      --accent-light: #e8e6f0;
+      --gold: #c5a55a;
+      --gold-dark: #a08540;
+      --gold-light: #f5edd8;
+      --navy: #1a1a3e;
+      --navy-light: #2a2a5e;
+      --green: #2e7d32;
+      --green-light: #d4edda;
+      --red: #7a1515;
+      --red-light: #fce4e4;
+      --progress-bg: #d6cfc5;
+      --shadow: 0 2px 8px rgba(26,26,62,0.06);
+      --shadow-lg: 0 4px 16px rgba(26,26,62,0.1);
+      --cat-sea: #1a3d5c;
+      --cat-land: #5c2e1a;
+      --cat-sides: #2e5c32;
+      --cat-soups: #8b1a1a;
+      --cat-raw: #1a4d4d;
+      --cat-dessert: #4d1a3d;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e0e1a;
+        --surface: #1a1a2e;
+        --surface-alt: #22223a;
+        --border: #2e2e4a;
+        --text: #f0ebe5;
+        --text-secondary: #9a96a8;
+        --accent: #c5a55a;
+        --accent-light: #2a2540;
+        --gold: #c5a55a;
+        --gold-dark: #a08540;
+        --gold-light: #2a2518;
+        --navy: #1a1a3e;
+        --navy-light: #2a2a5e;
+        --green: #66bb6a;
+        --green-light: #1a2e1a;
+        --red: #ef5350;
+        --red-light: #2e1515;
+        --progress-bg: #2e2e4a;
+        --shadow: 0 2px 8px rgba(0,0,0,0.3);
+        --shadow-lg: 0 4px 16px rgba(0,0,0,0.4);
+        --cat-sea: #5d9ecf;
+        --cat-land: #d4a07a;
+        --cat-sides: #66bb6a;
+        --cat-soups: #ef5350;
+        --cat-raw: #4db6ac;
+        --cat-dessert: #ba68c8;
+      }
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 0;
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(160deg, #0e0e24 0%, #1a1a3e 40%, #16213e 100%);
+      color: #fff;
+      text-align: center;
+      padding: 3rem 1rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 3px solid var(--gold);
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(197,165,90,0.08) 0%, transparent 60%);
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.8rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      margin-bottom: 0.15rem;
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    }
+    .hero .tagline {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--gold);
+      margin-bottom: 0.75rem;
+      letter-spacing: 0.03em;
+    }
+    .hero .subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      opacity: 0.6;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      font-size: 0.75rem;
+      opacity: 0.85;
+    }
+    .hero-stats span {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-family: 'Inter', sans-serif;
+    }
+    .hero-stats .divider {
+      width: 1px;
+      height: 14px;
+      background: rgba(197,165,90,0.4);
+    }
+
+    /* Main container */
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    /* Sticky scoreboard */
+    .scoreboard {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      margin: -2rem auto 1rem;
+      max-width: 680px;
+      box-shadow: var(--shadow-lg);
+    }
+    .hero-spacer {
+      background: var(--navy);
+      height: 1.5rem;
+      margin-top: -3px;
+    }
+    .scoreboard-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+    .scoreboard-total {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.25rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.15;
+    }
+    .scoreboard-meta {
+      text-align: right;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+    .scoreboard-items {
+      font-weight: 600;
+      color: var(--text);
+    }
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--progress-bg);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 0.35rem;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s cubic-bezier(0.4,0,0.2,1), background 0.3s;
+      width: 0%;
+      background: var(--gold);
+    }
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+    .verdict {
+      margin-top: 0.6rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-align: center;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .verdict.empty { background: transparent; color: var(--text-secondary); }
+    .verdict.profit { background: var(--green-light); color: var(--green); }
+    .verdict.loss { background: var(--red-light); color: var(--red); }
+    .verdict.gold { background: var(--gold-light); color: var(--gold); }
+
+    /* Controls row */
+    .controls-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+    }
+    .toggle-group {
+      display: flex;
+      background: var(--navy);
+      border-radius: 8px;
+      padding: 3px;
+      gap: 2px;
+    }
+    .toggle-btn {
+      flex: 1;
+      padding: 0.45rem 0.85rem;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .toggle-btn:hover:not(.active) {
+      color: rgba(255,255,255,0.9);
+    }
+    .toggle-btn.active {
+      background: var(--gold);
+      color: var(--navy);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      font-weight: 600;
+    }
+    .filter-pills {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+    .filter-pill {
+      padding: 0.4rem 0.7rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      white-space: nowrap;
+    }
+    .filter-pill:hover { border-color: var(--gold); color: var(--gold-dark); }
+    .filter-pill.active {
+      background: var(--navy);
+      color: #d4b76b;
+      border-color: var(--navy);
+    }
+
+    /* Category sections */
+    .category {
+      margin-bottom: 0.75rem;
+    }
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0;
+      cursor: pointer;
+      user-select: none;
+    }
+    .category-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      background: var(--surface-alt);
+    }
+    .category-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      flex: 1;
+    }
+    .category-count {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      background: var(--surface-alt);
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+    }
+    .category-chevron {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      transition: transform 0.2s;
+    }
+    .category.collapsed .category-chevron { transform: rotate(-90deg); }
+    .category-items {
+      overflow: hidden;
+    }
+    .category.collapsed .category-items {
+      display: none;
+    }
+
+    /* Item cards */
+    .item-card {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.65rem 0.75rem;
+      margin-bottom: 0.4rem;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    }
+    .item-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+    .item-card.has-items {
+      border-color: var(--gold);
+      background: var(--gold-light);
+    }
+    .item-emoji {
+      font-size: 1.6rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name {
+      font-weight: 600;
+      font-size: 0.85rem;
+      line-height: 1.3;
+    }
+    .item-desc {
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      line-height: 1.3;
+    }
+    .item-price-tag {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--gold-dark);
+      margin-top: 0.1rem;
+    }
+    .item-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-shrink: 0;
+    }
+    .item-controls button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .item-controls button:hover {
+      background: var(--gold-light);
+      border-color: var(--gold);
+      color: var(--gold-dark);
+    }
+    .item-controls button:active { transform: scale(0.95); }
+    .item-controls button:disabled { opacity: 0.25; cursor: default; }
+    .item-controls button:disabled:hover {
+      background: var(--surface);
+      border-color: var(--border);
+      color: var(--text);
+      transform: none;
+    }
+    .item-count {
+      width: 1.4rem;
+      text-align: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .item-subtotal {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--gold-dark);
+      min-width: 2.8rem;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Plate summary */
+    .plate-summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+      box-shadow: var(--shadow);
+    }
+    .plate-summary h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .plate-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .plate-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: var(--gold-light);
+      color: var(--gold-dark);
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .plate-chip:hover {
+      background: var(--red-light);
+      color: var(--red);
+    }
+    .plate-chip .chip-x { font-size: 0.65rem; opacity: 0.7; }
+    .plate-empty {
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-style: italic;
+    }
+
+    /* Action buttons */
+    .actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .btn {
+      flex: 1;
+      padding: 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      text-align: center;
+    }
+    .btn:hover { border-color: var(--gold); color: var(--gold-dark); }
+    .btn-danger:hover {
+      background: var(--red-light);
+      color: var(--red);
+      border-color: var(--red);
+    }
+    .btn-accent {
+      background: var(--navy);
+      color: var(--gold);
+      border-color: var(--navy);
+    }
+    .btn-accent:hover {
+      background: var(--navy-light);
+      color: var(--gold);
+    }
+
+    /* Share modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      animation: fadeIn 0.2s;
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .modal {
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 1.5rem;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      animation: popIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal h3 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    .modal textarea {
+      width: 100%;
+      height: 100px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem;
+      font-family: monospace;
+      font-size: 0.75rem;
+      background: var(--surface-alt);
+      color: var(--text);
+      resize: none;
+      margin-bottom: 0.75rem;
+    }
+    .modal .actions { margin-top: 0; }
+
+    footer {
+      text-align: center;
+      padding: 2.5rem 1rem 3rem;
+      color: var(--text-secondary);
+      font-size: 0.72rem;
+      line-height: 1.8;
+    }
+    footer .footer-divider {
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+      margin: 0 auto 1rem;
+      opacity: 0.4;
+    }
+    footer .footer-address {
+      font-size: 0.68rem;
+      margin-bottom: 0.5rem;
+    }
+    footer .footer-love {
+      font-family: 'Great Vibes', cursive;
+      font-size: 1rem;
+      color: var(--gold);
+      margin-top: 0.75rem;
+    }
+    footer a { color: var(--gold-dark); text-decoration: none; }
+
+    /* Sources panel */
+    .sources-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-top: 1rem;
+      box-shadow: var(--shadow);
+    }
+    .sources-panel h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sources-panel h3 .chevron {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      transition: transform 0.2s;
+    }
+    .sources-panel.collapsed .chevron { transform: rotate(-90deg); }
+    .sources-panel.collapsed .sources-content { display: none; }
+    .source-group { margin-bottom: 0.75rem; }
+    .source-group-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      margin-bottom: 0.35rem;
+    }
+    .source-item {
+      display: flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      line-height: 1.6;
+    }
+    .source-item a {
+      color: var(--gold-dark);
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .source-item a:hover { text-decoration: underline; }
+    .source-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--text-secondary);
+      flex-shrink: 0;
+      margin-top: 0.45rem;
+    }
+    .item-price-tag {
+      cursor: help;
+      position: relative;
+    }
+    .price-sources {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      margin-left: 0.25rem;
+    }
+
+    /* Focus & a11y */
+    button:focus-visible, .filter-pill:focus-visible, .toggle-btn:focus-visible {
+      outline: 2px solid var(--gold);
+      outline-offset: 2px;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Desktop */
+    @media (min-width: 768px) {
+      .hero { padding: 3.5rem 2rem 3rem; }
+      .hero h1 { font-size: 3.5rem; }
+      .hero .tagline { font-size: 1.2rem; }
+      .container { max-width: 720px; padding: 1.25rem; }
+      .item-card { padding: 0.75rem 1rem; }
+      .item-emoji { width: 44px; height: 44px; font-size: 1.8rem; }
+    }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 2.2rem; }
+      .hero-stats { gap: 0.75rem; font-size: 0.68rem; }
+      .scoreboard { margin: -1rem 0.5rem 0.75rem; padding: 0.75rem 1rem; }
+      .scoreboard-total { font-size: 1.75rem; }
+      .item-desc { display: none; }
+      .filter-pills { gap: 0.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="hero-content">
+      <h1>The Nordic</h1>
+      <p class="tagline">All You Can Enjoy</p>
+      <p class="subtitle">Buffet Calculator</p>
+      <div class="hero-stats">
+        <span>$145 / person</span>
+        <span class="divider"></span>
+        <span>Charlestown, RI</span>
+        <span class="divider"></span>
+        <span>Est. 1963</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-spacer"></div>
+
+  <div class="container">
+    <div class="scoreboard" id="scoreboard" aria-live="polite">
+      <div class="scoreboard-row">
+        <div class="scoreboard-total" id="total">$0</div>
+        <div class="scoreboard-meta">
+          <div class="scoreboard-items" id="itemCount">0 items</div>
+          <div>target: $145</div>
+        </div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+      <div class="progress-labels">
+        <span id="progressLabel">0%</span>
+        <span>$145</span>
+      </div>
+      <div class="verdict empty" id="verdict">Add items to your plate to start</div>
+    </div>
+
+    <div class="controls-row">
+      <div class="toggle-group">
+        <button class="toggle-btn active" data-mode="restaurant" onclick="setPricing('restaurant')">Restaurant Prices</button>
+        <button class="toggle-btn" data-mode="supermarket" onclick="setPricing('supermarket')">Supermarket Prices</button>
+      </div>
+      <div class="filter-pills" id="filters"></div>
+    </div>
+
+    <div id="menu"></div>
+
+    <div class="plate-summary" id="plateSummary">
+      <h3>Your Plate</h3>
+      <div class="plate-items" id="plateItems">
+        <span class="plate-empty">Nothing yet - start adding items above</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-danger" onclick="resetAll()">Reset Plate</button>
+      <button class="btn" onclick="shareResults()">Share Results</button>
+    </div>
+
+    <div id="sourcesContainer"></div>
+
+    <footer>
+      <div class="footer-divider"></div>
+      <div class="footer-address">
+        1171 Prosser Trail, Charlestown, RI 02813<br>
+        <a href="https://thenordic.com/" target="_blank" rel="noopener noreferrer">thenordic.com</a> &middot; <a href="tel:+14017834515">(401) 783-4515</a>
+      </div>
+      <div class="footer-love">Made with love by Dani</div>
+    </footer>
+  </div>
+
+  <div class="modal-overlay" id="modal" style="display:none" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <h3>Share Your Plate</h3>
+      <textarea id="shareText" readonly></textarea>
+      <div class="actions">
+        <button class="btn" onclick="closeModal()">Close</button>
+        <button class="btn btn-accent" onclick="copyShare(event)">Copy to Clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BUFFET_COST = 145;
+
+    const CATEGORIES = [
+      { id: "sea",     name: "From the Sea",   icon: "\uD83C\uDF0A", color: "var(--cat-sea)" },
+      { id: "raw",     name: "Raw Bar",         icon: "\uD83E\uDDAA", color: "var(--cat-raw)" },
+      { id: "land",    name: "From the Land",   icon: "\uD83E\uDD69", color: "var(--cat-land)" },
+      { id: "soups",   name: "Soups",            icon: "\uD83C\uDF72", color: "var(--cat-soups)" },
+      { id: "sides",   name: "Sides & Fruits",   icon: "\uD83E\uDD57", color: "var(--cat-sides)" },
+      { id: "dessert", name: "Decadent Desserts", icon: "\uD83C\uDF70", color: "var(--cat-dessert)" },
+    ];
+
+    // Sources data
+    const SOURCES = {
+      restaurants: [
+        { id:"mob", name:"Matunuck Oyster Bar", loc:"South Kingstown, RI", url:"https://rhodyoysters.com/" },
+        { id:"cgh", name:"Coast Guard House", loc:"Narragansett, RI", url:"https://thecoastguardhouse.com/" },
+        { id:"gog", name:"George's of Galilee", loc:"Narragansett, RI", url:"https://www.georgesofgalilee.com/" },
+        { id:"shi", name:"Shelter Harbor Inn", loc:"Westerly, RI", url:"https://shelterharborinnri.com/restaurant/" },
+        { id:"wpi", name:"Weekapaug Inn", loc:"Westerly, RI", url:"https://weekapauginn.com/the-restaurant-2/" },
+      ],
+      markets: [
+        { id:"ac", name:"Andrade's Catch", loc:"Bristol, RI", url:"https://www.andradescatchri.com/" },
+        { id:"sl", name:"Sakonnet Lobster", loc:"Little Compton, RI", url:"http://sakonnetlobster.com/" },
+        { id:"sh", name:"Shaw's Supermarket", loc:"Multiple RI locations", url:"https://www.shaws.com/" },
+        { id:"mq", name:"McQuade's Marketplace", loc:"Westerly, RI", url:"https://mcquadesmarket.com/" },
+        { id:"oc", name:"Ocean Catch Seafood", loc:"Wakefield, RI", url:"https://www.oceancatchseafoodri.com/" },
+      ]
+    };
+
+    const ITEMS = [
+      // FROM THE SEA — Restaurant prices averaged from: Matunuck ($46.95 stuffed), George's ($29.99 boil), Coast Guard House (lobster roll $21 + add-ons)
+      // Market prices from: Andrade's ($18.90/lb cull), Sakonnet ($13.99/lb 1.25lb), Shaw's ($19.99/lb)
+      { cat:"sea", emoji:"\uD83E\uDD9E", name:"Whole Lobster (1.25 lb)", desc:"Boiled cold water lobster", restaurant:47, supermarket:22, unit:"each", rsrc:"mob,gog", msrc:"ac,sl,sh" },
+      { cat:"sea", emoji:"\uD83E\uDD80", name:"Snow Crab Legs (\u00BD lb)", desc:"Steamed to perfection", restaurant:20, supermarket:9, unit:"serving", rsrc:"cgh,gog", msrc:"sh,mq" },
+      { cat:"sea", emoji:"\uD83D\uDC1A", name:"Fried Scallops", desc:"Dipped in batter, fried golden", restaurant:24, supermarket:10, unit:"plate", rsrc:"shi,cgh", msrc:"oc,sh" },
+      { cat:"sea", emoji:"\uD83C\uDF64", name:"Fried Shrimp", desc:"Crunchy outside, juicy inside", restaurant:17, supermarket:7, unit:"plate", rsrc:"gog,cgh", msrc:"sh,mq" },
+      { cat:"sea", emoji:"\uD83E\uDD53", name:"Scallops Wrapped in Bacon", desc:"Jumbo scallops, smoked bacon, maple glaze", restaurant:24, supermarket:12, unit:"plate", rsrc:"shi,cgh", msrc:"oc,sh" },
+      { cat:"sea", emoji:"\uD83E\uDD90", name:"Baked Stuffed Shrimp", desc:"Buttery, seasoned seafood stuffing", restaurant:37, supermarket:10, unit:"plate", rsrc:"gog", msrc:"oc,sh" },
+      { cat:"sea", emoji:"\uD83E\uDDAA", name:"Steamed Littleneck Clams", desc:"Local from Narragansett Bay", restaurant:14, supermarket:7, unit:"dozen", rsrc:"mob,gog", msrc:"ac,oc" },
+      { cat:"sea", emoji:"\uD83C\uDF5D", name:"Scallop & Shrimp Scampi", desc:"Butter and garlic sauce", restaurant:24, supermarket:12, unit:"plate", rsrc:"shi,cgh", msrc:"oc,sh" },
+      { cat:"sea", emoji:"\uD83E\uDDC0", name:"Lobster Mac & Cheese", desc:"Rich, creamy, loaded with lobster", restaurant:26, supermarket:10, unit:"bowl", rsrc:"wpi", msrc:"sh,mq" },
+      { cat:"sea", emoji:"\uD83E\uDD5F", name:"Lobster Fritters", desc:"Fried golden brown", restaurant:14, supermarket:6, unit:"plate", rsrc:"mob,gog", msrc:"mq" },
+      { cat:"sea", emoji:"\uD83D\uDC1F", name:"Stuffed Sole", desc:"Crab meat and scallop stuffing", restaurant:22, supermarket:10, unit:"fillet", rsrc:"gog,shi", msrc:"oc,mq" },
+      { cat:"sea", emoji:"\uD83C\uDF63", name:"Smoked Salmon", desc:"Premium locally smoked", restaurant:18, supermarket:9, unit:"plate", rsrc:"wpi,shi", msrc:"sh,mq" },
+      { cat:"sea", emoji:"\uD83E\uDD57", name:"Seafood Salads", desc:"Lobster, shrimp, crawfish, conch, calamari", restaurant:23, supermarket:8, unit:"plate", rsrc:"gog,cgh", msrc:"oc,mq" },
+
+      // RAW BAR — Matunuck oysters $29.95/doz ($15/half), Weekapaug oysters $18, Coast Guard House calamari $11.50
+      { cat:"raw", emoji:"\uD83E\uDDAA", name:"Fresh Local Oysters (6)", desc:"Harvested daily, local sourcing", restaurant:15, supermarket:9, unit:"half dozen", rsrc:"mob,wpi", msrc:"ac,oc" },
+      { cat:"raw", emoji:"\uD83E\uDD90", name:"Shrimp Cocktail", desc:"Jumbo shrimp, chilled, cocktail sauce", restaurant:21, supermarket:8, unit:"plate", rsrc:"wpi,cgh", msrc:"sh,oc" },
+      { cat:"raw", emoji:"\uD83D\uDC1A", name:"Clams on the Half Shell (6)", desc:"Fresh from Narragansett Bay", restaurant:12, supermarket:6, unit:"half dozen", rsrc:"mob,gog", msrc:"ac,oc" },
+
+      // FROM THE LAND — Coast Guard House filet $32, prime rib $37; Shelter Harbor filet $24, rib-eye $28; George's rib eye available
+      { cat:"land", emoji:"\uD83E\uDD69", name:"Black Angus Prime Rib", desc:"Slow-cooked, tender", restaurant:37, supermarket:16, unit:"slice", rsrc:"cgh", msrc:"sh,mq" },
+      { cat:"land", emoji:"\uD83E\uDD69", name:"Black Angus Filet Mignon", desc:"Hand-trimmed, seared to perfection", restaurant:28, supermarket:18, unit:"portion", rsrc:"cgh,shi", msrc:"sh,mq" },
+      { cat:"land", emoji:"\uD83C\uDF56", name:"St. Louis BBQ Pork Ribs", desc:"House-made BBQ sauce", restaurant:28, supermarket:12, unit:"rack", rsrc:"gog,cgh", msrc:"sh,mq" },
+      { cat:"land", emoji:"\uD83C\uDF62", name:"Teriyaki Tenderloin Tips", desc:"Filet mignon, garlic teriyaki glaze", restaurant:26, supermarket:11, unit:"plate", rsrc:"shi,cgh", msrc:"sh,mq" },
+      { cat:"land", emoji:"\uD83C\uDF57", name:"Chicken Wings", desc:"Oven-baked, sweet chili sauce", restaurant:14, supermarket:5, unit:"plate", rsrc:"gog,cgh", msrc:"sh,mq" },
+      { cat:"land", emoji:"\uD83C\uDF57", name:"Chicken Tenders", desc:"Extra crispy, boneless", restaurant:12, supermarket:4, unit:"plate", rsrc:"gog,cgh", msrc:"sh,mq" },
+      { cat:"land", emoji:"\uD83E\uDD53", name:"Candied Bacon", desc:"Thick-cut, caramelized brown sugar", restaurant:10, supermarket:5, unit:"strips", rsrc:"gog", msrc:"sh,mq" },
+      { cat:"land", emoji:"\uD83C\uDF5F", name:"Sidewinder Fries", desc:"Thick-cut, fried potatoes", restaurant:8, supermarket:3, unit:"plate", rsrc:"wpi,cgh", msrc:"sh,mq" },
+
+      // SOUPS — Coast Guard House chowder $5-cup, Matunuck chowder $6.50-$8.50, Weekapaug chowder $8
+      { cat:"soups", emoji:"\uD83E\uDD63", name:"Lobster Bisque", desc:"Thick, creamy, lobster chunks", restaurant:10, supermarket:5, unit:"bowl", rsrc:"mob,cgh", msrc:"sh,mq" },
+      { cat:"soups", emoji:"\uD83C\uDF72", name:"New England Clam Chowder", desc:"Potatoes, clams, bacon, creamy base", restaurant:8, supermarket:4, unit:"bowl", rsrc:"cgh,mob,wpi", msrc:"sh,mq" },
+
+      // SIDES & FRUITS
+      { cat:"sides", emoji:"\uD83E\uDD66", name:"Broccoli", desc:"Steamed fresh", restaurant:6, supermarket:2, unit:"side", rsrc:"cgh,gog", msrc:"sh,mq" },
+      { cat:"sides", emoji:"\uD83E\uDED2", name:"Green Beans", desc:"Seasoned, tender-crisp", restaurant:6, supermarket:2, unit:"side", rsrc:"cgh,shi", msrc:"sh,mq" },
+      { cat:"sides", emoji:"\uD83C\uDF5A", name:"Vegetable Fried Rice", desc:"Onions, carrots, peas", restaurant:8, supermarket:3, unit:"bowl", rsrc:"gog", msrc:"sh,mq" },
+      { cat:"sides", emoji:"\uD83E\uDD54", name:"Baked Potato", desc:"With fixings", restaurant:6, supermarket:2, unit:"each", rsrc:"cgh,gog", msrc:"sh,mq" },
+      { cat:"sides", emoji:"\uD83C\uDF3D", name:"Corn on the Cob", desc:"Buttered, seasonal", restaurant:5, supermarket:2, unit:"ear", rsrc:"gog", msrc:"sh,mq" },
+      { cat:"sides", emoji:"\uD83C\uDF44", name:"Mushrooms", desc:"Marinated, baked, saut\u00e9ed", restaurant:8, supermarket:3, unit:"side", rsrc:"shi", msrc:"sh,mq" },
+      { cat:"sides", emoji:"\uD83C\uDF47", name:"Seasonal Fruit", desc:"International assortment", restaurant:8, supermarket:4, unit:"plate", rsrc:"wpi", msrc:"sh,mq" },
+      { cat:"sides", emoji:"\uD83C\uDF5E", name:"Bread Basket", desc:"Garlic knots & corn muffins", restaurant:5, supermarket:2, unit:"basket", rsrc:"gog,cgh", msrc:"sh,mq" },
+      { cat:"sides", emoji:"\uD83E\uDD57", name:"Salad Bar", desc:"DIY with toppings and dressings", restaurant:10, supermarket:4, unit:"plate", rsrc:"cgh,wpi", msrc:"sh,mq" },
+
+      // DESSERTS
+      { cat:"dessert", emoji:"\uD83C\uDF68", name:"H\u00e4agen-Dazs Ice Cream", desc:"Full bar with fixings", restaurant:8, supermarket:5, unit:"scoop", rsrc:"wpi,cgh", msrc:"sh,mq" },
+      { cat:"dessert", emoji:"\uD83C\uDF53", name:"Chocolate-Dipped Strawberries", desc:"& cherries", restaurant:8, supermarket:4, unit:"plate", rsrc:"gog", msrc:"sh,mq" },
+      { cat:"dessert", emoji:"\uD83C\uDF70", name:"Cheesecake", desc:"Classic New York style", restaurant:10, supermarket:5, unit:"slice", rsrc:"cgh,gog", msrc:"sh,mq" },
+      { cat:"dessert", emoji:"\uD83E\uDD55", name:"Carrot Cake", desc:"Cream cheese frosting", restaurant:9, supermarket:4, unit:"slice", rsrc:"cgh", msrc:"sh,mq" },
+      { cat:"dessert", emoji:"\uD83E\uDD67", name:"Bourbon Pecan Pie", desc:"Rich, nutty, boozy", restaurant:10, supermarket:5, unit:"slice", rsrc:"shi", msrc:"sh,mq" },
+      { cat:"dessert", emoji:"\uD83C\uDF6B", name:"Snickers Cheesecake", desc:"Caramel, chocolate, peanuts", restaurant:12, supermarket:5, unit:"slice", rsrc:"cgh", msrc:"sh,mq" },
+      { cat:"dessert", emoji:"\uD83C\uDF6B", name:"Belgian Chocolate Mousse", desc:"Rich chocolate cups", restaurant:10, supermarket:4, unit:"cup", rsrc:"wpi", msrc:"sh,mq" },
+      { cat:"dessert", emoji:"\uD83E\uDD50", name:"Cannolis", desc:"Crispy shell, sweet ricotta", restaurant:7, supermarket:3, unit:"each", rsrc:"gog", msrc:"sh,mq" },
+      { cat:"dessert", emoji:"\uD83C\uDF69", name:"Bismarks", desc:"Filled doughnuts", restaurant:5, supermarket:2, unit:"each", rsrc:"gog", msrc:"sh,mq" },
+      { cat:"dessert", emoji:"\uD83C\uDF6B", name:"Ghirardelli Brownies", desc:"Fudgy, rich, chocolatey", restaurant:6, supermarket:3, unit:"each", rsrc:"cgh", msrc:"sh,mq" },
+      { cat:"dessert", emoji:"\uD83C\uDF4B", name:"Lemon Squares", desc:"Tangy, buttery crust", restaurant:5, supermarket:2, unit:"each", rsrc:"shi", msrc:"sh,mq" },
+    ];
+
+    let pricing = "restaurant";
+    let counts = ITEMS.map(() => 0);
+    let activeFilter = "all";
+    let collapsedCats = new Set();
+
+    function getSrcNames(item) {
+      const srcKey = pricing === "restaurant" ? "rsrc" : "msrc";
+      const srcList = pricing === "restaurant" ? SOURCES.restaurants : SOURCES.markets;
+      if (!item[srcKey]) return "";
+      const ids = item[srcKey].split(",");
+      const names = ids.map(id => {
+        const s = srcList.find(x => x.id === id);
+        return s ? s.name.split(" ")[0] : id;
+      });
+      return "(" + names.join(", ") + ")";
+    }
+
+    function buildSourcesPanel() {
+      let html = `<div class="sources-panel" id="sourcesPanel">`;
+      html += `<h3 onclick="toggleSources()">Price Sources <span class="chevron">\u25BC</span></h3>`;
+      html += `<div class="sources-content">`;
+      html += `<div class="source-group"><div class="source-group-title">Restaurants (5)</div>`;
+      SOURCES.restaurants.forEach(s => {
+        html += `<div class="source-item"><div class="source-dot"></div><a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.name}</a> \u2014 ${s.loc}</div>`;
+      });
+      html += `</div>`;
+      html += `<div class="source-group"><div class="source-group-title">Markets (5)</div>`;
+      SOURCES.markets.forEach(s => {
+        html += `<div class="source-item"><div class="source-dot"></div><a href="${s.url}" target="_blank" rel="noopener noreferrer">${s.name}</a> \u2014 ${s.loc}</div>`;
+      });
+      html += `</div>`;
+      html += `<div style="margin-top:0.75rem;padding-top:0.6rem;border-top:1px solid var(--border);font-size:0.65rem;color:var(--text-secondary);line-height:1.5;">`;
+      html += `Prices sourced from 5 RI restaurants &amp; 5 local markets near The Nordic (2026). Averaged from real menu prices &amp; market rates. Items show source in parentheses.`;
+      html += `</div>`;
+      html += `</div></div>`;
+      document.getElementById("sourcesContainer").innerHTML = html;
+    }
+
+    function toggleSources() {
+      document.getElementById("sourcesPanel").classList.toggle("collapsed");
+    }
+
+    // Build filter pills
+    function buildFilters() {
+      const el = document.getElementById("filters");
+      let html = `<button class="filter-pill active" onclick="setFilter('all')">All</button>`;
+      CATEGORIES.forEach(c => {
+        html += `<button class="filter-pill" data-filter="${c.id}" onclick="setFilter('${c.id}')">${c.icon} ${c.name.replace("From the ","")}</button>`;
+      });
+      el.innerHTML = html;
+    }
+
+    function setFilter(id) {
+      activeFilter = id;
+      document.querySelectorAll(".filter-pill").forEach(p => {
+        p.classList.toggle("active", (id === "all" && !p.dataset.filter) || p.dataset.filter === id);
+      });
+      render();
+    }
+
+    function setPricing(mode) {
+      pricing = mode;
+      document.querySelectorAll(".toggle-btn").forEach(b => {
+        b.classList.toggle("active", b.dataset.mode === mode);
+      });
+      render();
+    }
+
+    function toggleCategory(catId) {
+      if (collapsedCats.has(catId)) collapsedCats.delete(catId);
+      else collapsedCats.add(catId);
+      render();
+    }
+
+    function render() {
+      const scrollY = window.scrollY;
+      const menu = document.getElementById("menu");
+      let html = "";
+
+      CATEGORIES.forEach(cat => {
+        if (activeFilter !== "all" && activeFilter !== cat.id) return;
+        const catItems = ITEMS.map((item, i) => ({ ...item, idx: i })).filter(item => item.cat === cat.id);
+        if (catItems.length === 0) return;
+
+        const catCount = catItems.reduce((s, item) => s + counts[item.idx], 0);
+        const collapsed = collapsedCats.has(cat.id);
+
+        html += `<div class="category ${collapsed ? 'collapsed' : ''}">`;
+        html += `<div class="category-header" onclick="toggleCategory('${cat.id}')">`;
+        html += `<div class="category-icon" style="color:${cat.color}">${cat.icon}</div>`;
+        html += `<div class="category-title">${cat.name}</div>`;
+        if (catCount > 0) html += `<div class="category-count">${catCount} item${catCount>1?'s':''}</div>`;
+        html += `<div class="category-chevron">\u25BC</div>`;
+        html += `</div>`;
+        html += `<div class="category-items">`;
+
+        catItems.forEach(item => {
+          const price = item[pricing];
+          const count = counts[item.idx];
+          const subtotal = count * price;
+          html += `
+            <div class="item-card ${count > 0 ? 'has-items' : ''}">
+              <div class="item-emoji">${item.emoji}</div>
+              <div class="item-info">
+                <div class="item-name">${item.name}</div>
+                <div class="item-desc">${item.desc}</div>
+                <div class="item-price-tag">$${price} / ${item.unit}<span class="price-sources">${getSrcNames(item)}</span></div>
+              </div>
+              <div class="item-controls">
+                <button onclick="adjust(${item.idx},-1)" ${count===0?'disabled':''}>&minus;</button>
+                <span class="item-count">${count}</span>
+                <button onclick="adjust(${item.idx},1)">+</button>
+              </div>
+              <div class="item-subtotal">${subtotal > 0 ? '$'+subtotal : '\u00A0'}</div>
+            </div>`;
+        });
+        html += `</div></div>`;
+      });
+
+      menu.innerHTML = html;
+      updateScoreboard();
+      updatePlate();
+      window.scrollTo(0, scrollY);
+    }
+
+    function adjust(index, delta) {
+      counts[index] = Math.max(0, counts[index] + delta);
+      render();
+    }
+
+    function resetAll() {
+      counts = ITEMS.map(() => 0);
+      collapsedCats.clear();
+      render();
+    }
+
+    function updateScoreboard() {
+      const total = ITEMS.reduce((sum, item, i) => sum + counts[i] * item[pricing], 0);
+      const totalItems = counts.reduce((a, b) => a + b, 0);
+      const pct = Math.min(Math.round((total / BUFFET_COST) * 100), 999);
+
+      document.getElementById("total").textContent = "$" + total;
+      document.getElementById("itemCount").textContent = totalItems + " item" + (totalItems !== 1 ? "s" : "");
+
+      const fill = document.getElementById("progress");
+      fill.style.width = Math.min(pct, 100) + "%";
+      if (total >= BUFFET_COST * 2) fill.style.background = "#c5a55a";
+      else if (total >= BUFFET_COST) fill.style.background = "var(--green)";
+      else fill.style.background = "var(--gold)";
+
+      document.getElementById("progressLabel").textContent = pct + "%";
+
+      const verdict = document.getElementById("verdict");
+      if (total === 0) {
+        verdict.className = "verdict empty";
+        verdict.textContent = "Add items to your plate to start";
+      } else if (total >= BUFFET_COST * 2) {
+        verdict.className = "verdict gold";
+        verdict.textContent = "\uD83C\uDFC6 LEGENDARY \u2014 You're up $" + (total - BUFFET_COST) + " (" + pct + "% ROI)";
+      } else if (total >= BUFFET_COST) {
+        verdict.className = "verdict profit";
+        verdict.textContent = "You're up $" + (total - BUFFET_COST) + " \u2014 money well spent";
+      } else {
+        verdict.className = "verdict loss";
+        verdict.textContent = "Still $" + (BUFFET_COST - total) + " short \u2014 keep eating";
+      }
+    }
+
+    function updatePlate() {
+      const el = document.getElementById("plateItems");
+      const plateItems = ITEMS.map((item, i) => ({ ...item, idx: i, count: counts[i] })).filter(x => x.count > 0);
+      if (plateItems.length === 0) {
+        el.innerHTML = '<span class="plate-empty">Nothing yet \u2014 start adding items above</span>';
+        return;
+      }
+      el.innerHTML = plateItems.map(item =>
+        `<span class="plate-chip" onclick="adjust(${item.idx},-1)" title="Click to remove one">
+          ${item.emoji} ${item.count > 1 ? item.count + '\u00d7 ' : ''}${item.name}
+          <span class="chip-x">\u2715</span>
+        </span>`
+      ).join('');
+    }
+
+    function shareResults() {
+      const total = ITEMS.reduce((sum, item, i) => sum + counts[i] * item[pricing], 0);
+      const totalItems = counts.reduce((a, b) => a + b, 0);
+      const plateItems = ITEMS.map((item, i) => ({ ...item, count: counts[i] })).filter(x => x.count > 0);
+      const pct = Math.round((total / BUFFET_COST) * 100);
+
+      let text = `\uD83E\uDD9E The Nordic Buffet Calculator\n`;
+      text += `$${BUFFET_COST} buffet \u2192 $${total} in ${pricing} value (${pct}%)\n\n`;
+      text += `My plate (${totalItems} items):\n`;
+      plateItems.forEach(item => {
+        text += `  ${item.emoji} ${item.count > 1 ? item.count + '\u00d7 ' : ''}${item.name} \u2014 $${item.count * item[pricing]}\n`;
+      });
+      text += `\n${total >= BUFFET_COST ? '\u2705 Money well spent!' : '\u274c Didn\'t break even'}\n`;
+      text += `\nhttps://thenordic.com/`;
+
+      document.getElementById("shareText").value = text;
+      document.getElementById("modal").style.display = "flex";
+    }
+
+    function copyShare(e) {
+      const ta = document.getElementById("shareText");
+      ta.select();
+      const btn = e ? e.target : document.querySelector('.btn-accent');
+      navigator.clipboard.writeText(ta.value).then(() => {
+        btn.textContent = "Copied!";
+        setTimeout(() => btn.textContent = "Copy to Clipboard", 1500);
+      }).catch(() => {
+        document.execCommand('copy');
+        btn.textContent = "Copied!";
+        setTimeout(() => btn.textContent = "Copy to Clipboard", 1500);
+      });
+    }
+
+    function closeModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        const modal = document.getElementById("modal");
+        if (modal.style.display === "flex") closeModal();
+      }
+    });
+
+    // Init
+    buildFilters();
+    buildSourcesPanel();
+    render();
+  </script>
+</body>
+</html>
